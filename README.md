@@ -18,7 +18,7 @@ A simplified timesheet tracker built as a pnpm monorepo with:
 # 1. Install dependencies
 pnpm install
 
-# 2. Start PostgreSQL
+# 2. Start PostgreSQL (Docker Desktop must be running)
 pnpm db:up
 
 # 3. Run database migrations
@@ -26,6 +26,13 @@ pnpm db:migrate
 
 # 4. Start API and web app
 pnpm dev
+```
+
+Copy env files on first setup if needed:
+
+```bash
+cp apps/api/.env.example apps/api/.env
+cp apps/web/.env.local.example apps/web/.env.local
 ```
 
 - API: http://localhost:3001
@@ -36,7 +43,7 @@ pnpm dev
 ### API (`apps/api/.env`)
 
 ```env
-DATABASE_URL=postgresql://timesheets:timesheets@localhost:5432/timesheets
+DATABASE_URL=postgresql://timesheets:timesheets@localhost:5433/timesheets
 PORT=3001
 ```
 
@@ -60,7 +67,8 @@ NEXT_PUBLIC_API_URL=http://localhost:3001
 | `pnpm dev` | Run API and web in parallel |
 | `pnpm build` | Build all packages |
 | `pnpm test` | Run all tests |
-| `pnpm db:up` | Start PostgreSQL via Docker |
+| `pnpm db:up` | Start PostgreSQL via Docker (port **5433**) |
+| `pnpm db:down` | Stop PostgreSQL container |
 | `pnpm db:migrate` | Apply Drizzle migrations |
 
 ## API overview
@@ -104,16 +112,14 @@ Includes:
 - API integration test for approval locking
 - Frontend helper test
 
-> Integration tests require PostgreSQL running and migrations applied.
-
-## Submission artifacts
-
-- `README.md` — setup instructions
-- `WRITEUP.md` — candidate-written (no AI)
-- `AI_WORKFLOW.md` — AI workflow description + committed artifacts
+> Integration tests use a **separate database** (`timesheets_test` by default) so `pnpm test` does not erase your dev data in `timesheets`.
 
 ## Troubleshooting
 
 - **Docker not running**: start Docker Desktop, then run `pnpm db:up`
+- **`ECONNREFUSED` on port 5433**: Postgres container is down — `pnpm db:up`
+- **Password authentication failed for user "timesheets"**: another PostgreSQL may be on port 5432 (common on Windows). This project uses **port 5433** in Docker. Ensure `docker-compose.yml` and `DATABASE_URL` both use `5433`
+- **Employees disappeared after `pnpm test`**: older runs truncated the dev DB. Tests now use `timesheets_test`; re-create employees once in the UI, or restore from backup if you had one
+- **Employees list empty but data existed before**: check **Show inactive** on `/employees` — deactivated staff are hidden by default
 - **Port conflicts**: change `PORT` and `NEXT_PUBLIC_API_URL`
-- **Migration errors**: ensure the database is empty or run `docker compose down -v` to reset
+- **Migration errors**: ensure the database is empty or run `docker compose down -v` to reset (this deletes all data)

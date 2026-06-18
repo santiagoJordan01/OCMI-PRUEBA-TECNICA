@@ -1,0 +1,22 @@
+{
+  "name": "mini-timesheets",
+  "private": true,
+  "packageManager": "pnpm@9.15.0",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  
+  "scripts": {
+    "dev": "pnpm --parallel -r dev",
+    "build": "pnpm -r build",
+    "test": "pnpm -r test",
+    "db:up": "docker compose up -d",
+    "db:down": "docker compose down",
+    "db:migrate": "pnpm --filter @mini-timesheets/api db:migrate",
+    "start":"docker compose up -d && pnpm dev"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

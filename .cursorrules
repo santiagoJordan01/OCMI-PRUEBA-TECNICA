@@ -1,0 +1,22 @@
+# OCMI Mini Timesheets — Cursor rules
+
+Ver también: SPEC.md, CURSOR.MD
+
+## Stack
+- pnpm monorepo: `apps/api`, `apps/web`, `packages/shared` (`@mini-timesheets/shared`)
+- API: Hono + Drizzle + PostgreSQL
+- Web: Next.js 15 + React Query + Tailwind
+
+## Conventions
+- Overtime/pay only in `packages/shared` (`calculateWeeklyPay`, `getWeekStart`)
+- Shared Zod schemas for API + client validation (`schemas.ts`)
+- API errors: `{ error: { code, message } }` + `Accept-Language` (en/es)
+- Employees soft-deleted via `deactivatedAt`
+- Weekly approval (`weekly_approvals`) locks time entries for that employee/week
+- Payroll week: Sunday → Saturday (US)
+
+## Do not
+- Put business logic in React components or API route handlers
+- Hard-delete employees
+- Allow time entry mutations when week is approved
+- Use `deletedAt` on time entries (not in this design)
