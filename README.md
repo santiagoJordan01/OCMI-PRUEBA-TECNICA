@@ -1,6 +1,8 @@
-# Mini Timesheets — OCMI Technical Assessment
+# Control de horas
 
-A simplified timesheet tracker built as a pnpm monorepo with:
+Registro de las horas de cada empleado. Una semana aprobada ya no se puede modificar, y el pago sale del mismo cálculo que muestra la pantalla.
+
+Monorepo con:
 
 - `apps/api` — Hono + Drizzle + PostgreSQL REST API
 - `apps/web` — Next.js client
